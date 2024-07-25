@@ -22,6 +22,12 @@ with st.form(key='income_expense_form'):
                                 columns=['Date', 'Type', 'Category', 'Amount'])
         st.session_state.data = pd.concat([st.session_state.data, new_data], ignore_index=True)
 
+# Convert data types to ensure compatibility
+st.session_state.data['Date'] = pd.to_datetime(st.session_state.data['Date'])
+st.session_state.data['Type'] = st.session_state.data['Type'].astype(str)
+st.session_state.data['Category'] = st.session_state.data['Category'].astype(str)
+st.session_state.data['Amount'] = st.session_state.data['Amount'].astype(float)
+
 # Display the data
 st.subheader('Transaction Data')
 st.dataframe(st.session_state.data)
@@ -41,7 +47,6 @@ if not st.session_state.data.empty:
     st.subheader('Monthly Spending')
     
     try:
-        st.session_state.data['Date'] = pd.to_datetime(st.session_state.data['Date'])
         st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M')
         monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum()
 
@@ -53,4 +58,3 @@ if not st.session_state.data.empty:
         st.pyplot(fig)
     except Exception as e:
         st.error(f"Error while plotting: {e}")
-        

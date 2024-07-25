@@ -47,10 +47,13 @@ if not st.session_state.data.empty:
     st.subheader('Monthly Spending')
     
     try:
-        st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M').astype(str)
-        monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum().reset_index()
+        # Group by month and year, then sum the amounts
+        st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M')
+        monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby(st.session_state.data['Month'].dt.strftime('%Y-%m'))['Amount'].sum().reset_index()
 
+        # Create a bar plot with Plotly
         fig = px.bar(monthly_expense, x='Month', y='Amount', title='Monthly Expense', labels={'Month': 'Month', 'Amount': 'Amount'})
         st.plotly_chart(fig)
     except Exception as e:
         st.error(f"Error while plotting: {e}")
+

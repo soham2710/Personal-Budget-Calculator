@@ -39,12 +39,18 @@ st.write(f"Balance: ${balance:.2f}")
 # Visualize monthly spending with charts
 if not st.session_state.data.empty:
     st.subheader('Monthly Spending')
-    st.session_state.data['Month'] = pd.to_datetime(st.session_state.data['Date']).dt.to_period('M')
-    monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum()
+    
+    try:
+        st.session_state.data['Date'] = pd.to_datetime(st.session_state.data['Date'])
+        st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M')
+        monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum()
 
-    fig, ax = plt.subplots()
-    monthly_expense.plot(kind='bar', ax=ax)
-    ax.set_title('Monthly Expense')
-    ax.set_xlabel('Month')
-    ax.set_ylabel('Amount')
-    st.pyplot(fig)
+        fig, ax = plt.subplots()
+        monthly_expense.plot(kind='bar', ax=ax)
+        ax.set_title('Monthly Expense')
+        ax.set_xlabel('Month')
+        ax.set_ylabel('Amount')
+        st.pyplot(fig)
+    except Exception as e:
+        st.error(f"Error while plotting: {e}")
+        

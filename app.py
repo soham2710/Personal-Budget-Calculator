@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Initialize session state to store income and expense data
 if 'data' not in st.session_state:
@@ -48,13 +48,9 @@ if not st.session_state.data.empty:
     
     try:
         st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M')
-        monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum()
+        monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum().reset_index()
 
-        fig, ax = plt.subplots()
-        monthly_expense.plot(kind='bar', ax=ax)
-        ax.set_title('Monthly Expense')
-        ax.set_xlabel('Month')
-        ax.set_ylabel('Amount')
-        st.pyplot(fig)
+        fig = px.bar(monthly_expense, x='Month', y='Amount', title='Monthly Expense', labels={'Month': 'Month', 'Amount': 'Amount'})
+        st.plotly_chart(fig)
     except Exception as e:
         st.error(f"Error while plotting: {e}")

@@ -47,7 +47,7 @@ if not st.session_state.data.empty:
     st.subheader('Monthly Spending')
     
     try:
-        st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M')
+        st.session_state.data['Month'] = st.session_state.data['Date'].dt.to_period('M').astype(str)
         monthly_expense = st.session_state.data[st.session_state.data['Type'] == 'Expense'].groupby('Month')['Amount'].sum().reset_index()
 
         fig = px.bar(monthly_expense, x='Month', y='Amount', title='Monthly Expense', labels={'Month': 'Month', 'Amount': 'Amount'})
